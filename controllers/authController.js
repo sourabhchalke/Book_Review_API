@@ -17,10 +17,6 @@ const userSignUp = async(req,res)=>{
             return res.json({success:false,message:"User Already Exists"});
         }
 
-         // Validating Email Format & Strong Password
-        // if(!validator.isEmail(email)){
-        //     return res.json({success:false,message:"Please enter a valid email"})
-        // }
          if(password.length < 8){
             return res.json({success:false,message:"Please enter a strong password"})
         }
@@ -35,11 +31,9 @@ const userSignUp = async(req,res)=>{
         })
         const user = await newUser.save();
         console.log("User Created",user);
-        
-        const userId = user._id;
 
         // Genrating Token
-        const token = jwt.sign({userId},process.env.SECRET_KEY);
+        const token = jwt.sign(user._id,process.env.SECRET_KEY);
         res.json({success:true,token})
 
 
@@ -50,4 +44,34 @@ const userSignUp = async(req,res)=>{
 
 }
 
-export  {userSignUp};
+// Login Function
+const userSignIn = async(req,res)=>{
+    try {
+        const {email,password}=req.body;
+
+        const exists = await userModel.findOne({email});
+        console.log(exists);
+
+        if(!exists){
+            return res.status(401).json({success:false,message:"User Doesn't Exists"});
+        }
+        
+        const isMatch = await bcryptjs.compare(password,exists.password);
+
+        if(!isMatch){
+           
+            return res.status(401).json({success:false,message:"Invalid Credentials"});
+        }
+
+           const userId=exists._id;
+           const token = jwt.sign({userId},process.env.SECRET_KEY);
+           return res.json({success:true,token});
+
+
+    } catch (error) {
+        res.status(401).json({success:false,message:error.message});
+        console.log(error);
+    }
+}
+
+export  {userSignUp,userSignIn};
