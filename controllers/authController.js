@@ -33,7 +33,7 @@ const userSignUp = async(req,res)=>{
         console.log("User Created",user);
 
         // Genrating Token
-        const token = jwt.sign(user._id,process.env.SECRET_KEY);
+        const token = jwt.sign({userId:user._id},process.env.SECRET_KEY);
         res.json({success:true,token})
 
 

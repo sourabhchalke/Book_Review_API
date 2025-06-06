@@ -2,6 +2,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import 'dotenv/config';
 import userRouter from './routes/userRoute.js';
+import bookRouter from './routes/bookRoute.js';
 const app=express();
 
 // Connecting MongoDB
@@ -14,7 +15,10 @@ mongoose.connect(`${process.env.MONGO_URI}/book-review-api`)
 app.use(express.json());
 
 // API Endpoints
+// For User
 app.use('/api/user',userRouter);
+// For books
+app.use('/api/book',bookRouter);
 
 app.get('/',(req,res)=>{
     res.send("API Working...");
