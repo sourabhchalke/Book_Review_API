@@ -1,5 +1,6 @@
-import { json } from 'express';
+
 import bookModel from '../models/Books.js';
+
 
 // Add books
 const addBook = async (req, res) => {
@@ -27,4 +28,38 @@ const addBook = async (req, res) => {
     }
 }
 
-export { addBook };
+// Fetching all books
+const getBooks = async(req,res)=>{
+   try {
+    // Destructure query parameters
+    const { author, genre, page = 1, limit = 10 } = req.query;
+
+    // Build filter object
+    const filter = {};
+    if (author) filter.author = author;
+    if (genre) filter.genre = genre;
+
+    // Convert pagination values to numbers
+    const skip = (Number(page) - 1) * Number(limit);
+
+    // Fetch filtered and paginated books
+    const books = await bookModel.find(filter)
+      .skip(skip)
+      .limit(Number(limit))
+      .sort({ createdAt: -1 }); // newest first
+
+    // Count total books matching filter
+    const totalBooks = await bookModel.countDocuments(filter);
+
+    res.status(200).json({
+      success: true,
+      books,
+    });
+
+    } catch (error) {
+        res.status(401).json({success:false,message:error});
+        console.log(error);
+    }
+}
+
+export { addBook ,getBooks};
