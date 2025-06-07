@@ -80,4 +80,36 @@ const updateReview = async (req, res) => {
     }
 }
 
-export { addReview, updateReview };
+const deleteReview = async (req, res) => {
+    try {
+
+        console.log("Request : ", req.params.id);
+        console.log("Request : ", req.user.id);
+
+        const reviewId = req.params.id;
+        const userId = req.user.id; 
+
+        // 1. Find the review
+        const review = await reviewModel.findById(reviewId);
+        if (!review) {
+            return res.status(404).json({ success: false, message: "Review not found" });
+        }
+
+        // 2. Check ownership
+        if (review.user.toString() !== userId) {
+            return res.status(403).json({ success: false, message: "You are not authorized to delete this review" });
+        }
+
+        // 3. Delete the review
+        await reviewModel.findByIdAndDelete(reviewId);
+
+        res.status(200).json({ success: true, message: "Review Deleted Successfully" });
+
+
+    } catch (error) {
+        res.status(401).json({ success: false, message: error });
+        console.log(error);
+    }
+}
+
+export { addReview, updateReview, deleteReview };
