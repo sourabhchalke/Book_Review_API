@@ -9,3 +9,4 @@ Get book details by ID.
 Submit review (Authenticated users only, one review per user per book).
 Update our own review with the help of req.params.id.
 Delete your own review with the help of req.params.id.
+Search books by title or author (partial and case-insensitive).

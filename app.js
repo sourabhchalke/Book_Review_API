@@ -21,7 +21,7 @@ app.use('/api/user',userRouter);
 // For books
 app.use('/api/book',bookRouter);
 // For Reviews
-app.use('/api/book',reviewRouter);
+app.use('/api/review',reviewRouter);
 
 app.get('/',(req,res)=>{
     res.send("API Working...");

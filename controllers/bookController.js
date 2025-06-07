@@ -81,4 +81,32 @@ const getBookById = async (req, res) => {
     }
 }
 
-export { addBook, getBooks, getBookById };
+const searchBook = async (req, res) => {
+    try {
+
+        console.log(req.query);
+        const { q } = req.query;
+
+        if (!q) {
+            return res.status(400).json({ success: false, message: "Search query is required" });
+        }
+
+        const searchRegex = new RegExp(q, 'i'); // 'i' for case-insensitive
+
+        const findBook = await bookModel.find({
+            $or: [
+                { title: { $regex: searchRegex } },
+                { author: { $regex: searchRegex } },
+            ]
+        });
+        console.log("Book : ", findBook);
+
+        res.status(200).json({ success: true, message: "Success" });
+
+    } catch (error) {
+        res.status(401).json({ success: false, message: error });
+        console.log(error);
+    }
+}
+
+export { addBook, getBooks, getBookById, searchBook };
