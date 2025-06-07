@@ -40,10 +40,44 @@ const addReview = async (req, res) => {
                 message: 'You have already reviewed this book',
             });
         }
-        
+
         res.status(401).json({ success: false, message: error });
         console.log(error);
     }
 }
 
-export { addReview };
+const updateReview = async (req, res) => {
+    try {
+
+        // console.log("Request : ", req.body);
+        // console.log("Request : ", req.params.id);
+        // console.log("Request : ", req.user.id);
+
+        const { rating, comment } = req.body;
+        const reviewId = req.params.id;
+        const userId = req.user.id;
+
+        const reviewFind = await reviewModel.findById(reviewId);
+        if (!reviewFind) {
+            return res.status(404).json({ success: false, message: "Review Not Found" });
+        }
+
+        // 2. Check if the logged-in user is the owner of the review
+        if (reviewFind.user.toString() !== userId) {
+            return res.status(403).json({ success: false, message: "You are not authorized to update this review" });
+        }
+
+        const update = await reviewModel.updateOne({
+            rating,
+            comment
+        })
+
+        res.status(200).json({ success: true, update });
+
+    } catch (error) {
+        res.status(401).json({ success: false, message: error });
+        console.log(error);
+    }
+}
+
+export { addReview, updateReview };

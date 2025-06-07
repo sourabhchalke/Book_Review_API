@@ -7,3 +7,4 @@ Create controller which handles new book creation(add books-only authorized user
 Get all books (with pagination and optional filters by author and genre).
 Get book details by ID.
 Submit review (Authenticated users only, one review per user per book).
+Update our own review.
