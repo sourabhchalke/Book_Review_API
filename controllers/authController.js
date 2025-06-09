@@ -8,7 +8,7 @@ const userSignUp = async(req,res)=>{
 
     try {
         const {name,email,password}=req.body;
-        console.log(name,email,password);
+        // console.log(name,email,password);
 
         // Checking user already exists or not
         const exists = await userModel.findOne({email});
@@ -30,7 +30,7 @@ const userSignUp = async(req,res)=>{
             password:hashedPassword
         })
         const user = await newUser.save();
-        console.log("User Created",user);
+        // console.log("User Created",user);
 
         // Genrating Token
         const token = jwt.sign({userId:user._id},process.env.SECRET_KEY);
@@ -50,7 +50,7 @@ const userSignIn = async(req,res)=>{
         const {email,password}=req.body;
 
         const exists = await userModel.findOne({email});
-        console.log(exists);
+        // console.log(exists);
 
         if(!exists){
             return res.status(401).json({success:false,message:"User Doesn't Exists"});
