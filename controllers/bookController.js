@@ -1,5 +1,6 @@
 
 import bookModel from '../models/Books.js';
+import reviewModel from '../models/Reviews.js';
 
 
 // Add books
@@ -67,13 +68,33 @@ const getBookById = async (req, res) => {
         // Destructuring params
         const { id } = req.params;
 
+        // Pagination values from query (default page 1, limit 5)
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 5;
+        const skip = (page - 1) * limit;
+
         // Getting book by id
         const book = await bookModel.findById(id);
         if (!book) {
             return res.status(404).json({ success: false, message: 'Book not found' });
         }
 
-        res.status(200).json({ success: true, book });
+        // Total reviews count (for pagination)
+        const totalReviews = await reviewModel.countDocuments({ book: id });
+
+        // 2. Get reviews with pagination
+        const reviews = await reviewModel
+            .find({ book: id })
+            .populate('user', 'username')
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit);
+
+        res.status(200).json({ success: true, book, reviews ,pagination: {
+        totalReviews,
+        currentPage: page,
+        totalPages: Math.ceil(totalReviews / limit)
+    }});
 
     } catch (error) {
         res.status(401).json({ success: false, message: error });
